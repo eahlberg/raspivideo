@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!flask/bin/python
 from flask import Flask, jsonify, make_response, abort, render_template
 import subprocess
 import json
@@ -6,8 +6,7 @@ import os
 
 app = Flask(__name__)
 
-#PATH = '/Volumes/Data/filmer'
-PATH = '/home/pi/timecapsule/filmer'
+PATH = '/Volumes/Data/filmer'
 FILE_EXT1 = '*.avi'
 output = subprocess.check_output(['find', PATH, '-name',
      FILE_EXT1])[0:-1].split(b'\n')
@@ -21,7 +20,6 @@ for i in xrange(0, len(output)):
     }
     movies.append(movie)
 
-print movies
 @app.route('/raspivideo')
 def index():
     return render_template('main.html')
@@ -41,11 +39,10 @@ def get_movie(movie_id):
 def play_movie(movie_id):
     movie = filter(lambda t : t['id'] == movie_id, movies)
     movie_path = movie[0]['title']
-    #vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
-    #cmd = vlc_path + ' "' + movie_path + '"'
-    cmd_pi = 'omxplayer -o hdmi ' + '"' + PATH + '"'
-    print cmd_pi
-    subprocess.call(cmd_pi, shell=True)
+    vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
+    cmd = vlc_path + ' "' + movie_path + '"'
+    print cmd
+    subprocess.call(cmd, shell=True)
     #os.system('echo ' + movie[0])
     return jsonify( { 'starting movie': movie } )
 
@@ -56,4 +53,4 @@ def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug = True)
