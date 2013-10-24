@@ -1,39 +1,38 @@
 #!flask/bin/python
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, abort
+import subprocess
+import json
 
 app = Flask(__name__)
 
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-        
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web',
-        'done': False
+PATH = '/Volumes/Data/filmer'
+FILE_EXT1 = '*.avi'
+output = subprocess.check_output(['find', PATH, '-name',
+     FILE_EXT1])[0:-1].split(b'\n')
+
+movies = []
+for i in xrange(0, len(output)):
+    movie_title = output[i].decode('utf-8')
+    movie = {
+            'id': i,
+            'title': movie_title
     }
-]
+    movies.append(movie)
 
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['GET'])
-def get_tasks(task_id):
-    task = filter(lambda t: t['id'] == task_id, tasks)
-    if len(task) == 0:
+@app.route('/raspivideo/movies', methods = ['GET'])
+def get_all_movies():
+    return jsonify( { 'movies': movies } )
+
+@app.route('/raspivideo/movies/<int:movie_id>', methods = ['GET'])
+def get_movie(movie_id):
+    movie = filter(lambda t: t['id'] == movie_id, movies)
+    if len(movie) == 0:
         abort(404)
-    return jsonify( { 'task': task[0] } )
-
-
+    return jsonify( { 'movie': movie[0] } )
 
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
-
-
-
 
 if __name__ == '__main__':
     app.run(debug = True)
