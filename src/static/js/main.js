@@ -1,14 +1,11 @@
 $(function() {
 
-    // baseUri needs to be the same as in app.py's app.run(URI)
-    // to avoid ajax cross domain issues
-    var baseUri = "http://0.0.0.0:5000/raspivideo/movies";
+    var baseUri = "http://10.0.1.5:5000/raspivideo/movies";
     var playUri = "play";
 
     $("#list_movies").click(function() {
         $("tbody").empty();
-        $("table").append("<thead><tr><th>id</th><th>title</th></tr></thead>");
-        alert("btn clicked");
+        $("table").append("<thead><tr><th>id</th><th>title</th></tr></thead>");;
         var deferred = $.getJSON(baseUri);
 
         deferred.done(function(obj) {
@@ -17,7 +14,8 @@ $(function() {
                 $("tbody").append("<tr><td>" + movie.id
                     + "</td><td>" + movie.title + "</td>"
                     + '<td><button id="play' + movie.id + '">play</button></td></tr>');
-                $("#play" + movie.id).click(function() { 
+                $("#play" + movie.id).click(function() {
+		    alert("play clicked");
                     var def = $.getJSON(baseUri + "/" + playUri + "/" + movie.id);
                     def.done(function(obj) {
                         console.log("sending play request");
