@@ -6,7 +6,8 @@ import os
 
 app = Flask(__name__)
 
-PATH = '/Volumes/Data/filmer'
+#PATH = '/Volumes/Data/filmer'
+PATH = '/home/pi/timecapsule/filmer'
 FILE_EXT1 = '*.avi'
 output = subprocess.check_output(['find', PATH, '-name',
      FILE_EXT1])[0:-1].split(b'\n')
@@ -39,10 +40,10 @@ def get_movie(movie_id):
 def play_movie(movie_id):
     movie = filter(lambda t : t['id'] == movie_id, movies)
     movie_path = movie[0]['title']
-    vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
-    cmd = vlc_path + ' "' + movie_path + '"'
-    print cmd
-    subprocess.call(cmd, shell=True)
+    #vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
+    #cmd = vlc_path + ' "' + movie_path + '"'
+    cmd_pi = 'omxplayer -o hdmi '
+    subprocess.call(cmd_pi, shell=True)
     #os.system('echo ' + movie[0])
     return jsonify( { 'starting movie': movie } )
 

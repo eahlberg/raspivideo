@@ -10,8 +10,12 @@
         
     </head>
 
-    <body> 
-        <button type="button" id="list_movies">list movies</button>
+    <body>
+    <form action="http://localhost:5000/raspivideo/movies/path" method="POST">
+        <input type="text" name="path" value="enter path"></input>
+        <input type="submit" value="save"></input>
+    </form>
+    <button type="button" id="list_movies">list movies</button>
         <table>
             <tbody></tbody>
         </table> 
