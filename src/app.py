@@ -20,6 +20,7 @@ for i in xrange(0, len(output)):
     }
     movies.append(movie)
 
+
 @app.route('/raspivideo')
 def index():
     return render_template('main.html')
@@ -53,4 +54,4 @@ def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(host='0.0.0.0')
