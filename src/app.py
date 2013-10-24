@@ -1,4 +1,4 @@
-#!flask/bin/python
+#!/usr/bin/env python
 from flask import Flask, jsonify, make_response, abort, render_template
 import subprocess
 import json
@@ -21,6 +21,7 @@ for i in xrange(0, len(output)):
     }
     movies.append(movie)
 
+print movies
 @app.route('/raspivideo')
 def index():
     return render_template('main.html')
@@ -42,7 +43,8 @@ def play_movie(movie_id):
     movie_path = movie[0]['title']
     #vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
     #cmd = vlc_path + ' "' + movie_path + '"'
-    cmd_pi = 'omxplayer -o hdmi '
+    cmd_pi = 'omxplayer -o hdmi ' + '"' + PATH + '"'
+    print cmd_pi
     subprocess.call(cmd_pi, shell=True)
     #os.system('echo ' + movie[0])
     return jsonify( { 'starting movie': movie } )
@@ -54,4 +56,4 @@ def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(host='0.0.0.0')
