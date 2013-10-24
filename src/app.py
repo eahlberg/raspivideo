@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, make_response, abort
+from flask import Flask, jsonify, make_response, abort, render_template
 import subprocess
 import json
 
@@ -18,6 +18,10 @@ for i in xrange(0, len(output)):
             'title': movie_title
     }
     movies.append(movie)
+
+@app.route('/raspivideo')
+def index():
+    return render_template('main.html')
 
 @app.route('/raspivideo/movies', methods = ['GET'])
 def get_all_movies():
