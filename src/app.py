@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, make_response, abort, render_template
 import subprocess
 import json
+import os
 
 app = Flask(__name__)
 
@@ -33,6 +34,19 @@ def get_movie(movie_id):
     if len(movie) == 0:
         abort(404)
     return jsonify( { 'movie': movie[0] } )
+
+@app.route('/raspivideo/movies/play/<int:movie_id>', methods = ['GET'])
+def play_movie(movie_id):
+    movie = filter(lambda t : t['id'] == movie_id, movies)
+    movie_path = movie[0]['title']
+    vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
+    cmd = vlc_path + ' "' + movie_path + '"'
+    print cmd
+    subprocess.call(cmd, shell=True)
+    #os.system('echo ' + movie[0])
+    return jsonify( { 'starting movie': movie } )
+
+
 
 @app.errorhandler(404)
 def not_found(error):
