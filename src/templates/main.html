@@ -7,13 +7,28 @@
         <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         
         <script src="/static/js/main.js"></script>
-        
+	<link href="/static/dist/css/bootstrap.css" rel="stylesheet">
     </head>
 
-    <body> 
-        <button type="button" id="list_movies">list movies</button>
-        <table>
-            <tbody></tbody>
-        </table> 
+    <body>
+	<div class="container">	
+	    <h1>raspivideo</h1> 
+        
+	    <button class="btn btn-warning btn-large" btn-type="button" id="list_movies">list movies</button>
+	    
+	    <button class="btn btn-primary" id="play">play</button>
+	    <button class="btn btn-primary" id="pause">pause</button>
+	    <button class="btn btn-primary" id="stop">stop</button>
+	    
+	    <table class="table table-striped">
+            	<tbody></tbody>
+	    </table>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="//code.jquery.com/jquery.js"></script>
+	<!-- Include all compiled plugins (below), or include
+		individual files as needed -->
+	<script src="/static/dist/js/bootstrap.min.js"></script>
     </body>
 </html>

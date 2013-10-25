@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 #PATH = '/Volumes/Data/filmer'
 PATH = '/home/pi/timecapsule/filmer'
+OMX_PATH = 'omxplayer -o local '
 FILE_EXT1 = '*.avi'
 FILE_EXT2 = '*.AVI'
 FILE_EXT3 = '*.mkv'
@@ -41,25 +42,29 @@ def get_movie(movie_id):
         abort(404)
     return jsonify( { 'movie': movie[0] } )
 
-@app.route('/raspivideo/movies/play/<int:movie_id>', methods = ['GET'])
+@app.route('/raspivideo/movies/action/play/<int:movie_id>', methods = ['GET'])
 def play_movie(movie_id):
-    movie = filter(lambda t : t['id'] == movie_id, movies)
-    movie_path = movie[0]['title']
-    #vlc_path = '/Applications/VLC.app/Contents/MacOS/VLC'
-    omx_path = 'omxplayer -o local '
-    #cmd = vlc_path + ' "' + movie_path + '"'
-    
-    cmd_pi = omx_path + '"' + movie_path + '"'
-    os.system(cmd_pi)
-    #subprocess.call(cmd, shell=True)
-    #subprocess.call(cmd_pi, shell=True)
-    return jsonify( { 'starting movie': movie } )
+    cmd_pi = OMX_PATH + '"' + get_moviepath(movie_id) + '"'
+    #print cmd_pi
+    os.system(cmd_pi) 
 
+@app.route('/raspivideo/movies/action/pause', methods = ['GET'])
+def pause_movie(movie_id):
+    print "in pause"
+    os.system('p')
 
+@app.route('/raspivideo/movies/action/stop', methods = ['GET'])
+def stop_movie(movie_id):
+    print "in stop"
+    os.system('q')
 
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
+
+def get_moviepath(movie_id):
+    movie = filter(lambda t : t['id'] == movie_id, movies)
+    return movie[0]['title']
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
