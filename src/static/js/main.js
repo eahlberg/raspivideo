@@ -7,11 +7,11 @@ $(function() {
     var playUri = actionUri + "/play";
     var pauseUri = actionUri + "/pause";
     var stopUri = actionUri + "/stop"; 
-    alert(playUri);
+    //alert(playUri);
 
     $("#list_movies").click(function() {
 	$("table").append("<thead><tr><th>id</th><th>title</th></tr></thead>");
-	//$("tbody").empty();
+	$("tbody").empty();
 	//alert("btn clicked");
 	var deferred = $.getJSON(baseUri);
 
@@ -24,7 +24,7 @@ $(function() {
 		    '" id=' + '"play' + movie.id + '">play</button></td></tr>');
 
 		$("#play" + movie.id).click(function() { 
-		    alert("play clicked: " + playUri + "/" + movie.id);
+		    //alert("play clicked: " + playUri + "/" + movie.id);
 		    var def = $.getJSON(playUri + "/" + movie.id);
 		    def.done(function(obj) {
 			console.log("sending play request");
@@ -39,6 +39,7 @@ $(function() {
 	    console.log("fail");
 	});
     });
+
     $("#pause").click(function() {
 	var deferred = $.getJSON(pauseUri);
 	deferred.done(function(obj) {
@@ -46,6 +47,15 @@ $(function() {
 	});
 	deferred.fail(function() {
 	    alert("pause call failed");
+	});
+    });
+    $("#stop").click(function() {
+	var def2 = $.getJSON(stopUri);
+	def2.done(function(obj) {
+	    alert("stop call succeeded");
+	});
+	def2.fail(function() {
+	    alert("stop call failed");
 	});
     });
 });
