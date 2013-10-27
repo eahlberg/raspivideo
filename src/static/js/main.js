@@ -2,7 +2,7 @@ $(function() {
 
     // baseUri needs to be the same as in app.py's app.run(URI)
     // to avoid ajax cross domain issues
-    var baseUri = "http://10.0.1.5:5000/raspivideo/movies";
+    var baseUri = "/raspivideo/movies";
     var actionUri = baseUri + "/action";
     var playUri = actionUri + "/play";
     var pauseUri = actionUri + "/pause";
