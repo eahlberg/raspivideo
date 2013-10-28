@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>raspivideo</title>
-        
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-        <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-        
-        <script src="/static/js/main.js"></script>
+	<title>raspivideo</title>
+
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+	<script src="/static/js/main.js"></script>
 	<link href="/static/dist/css/bootstrap.css" rel="stylesheet">
     </head>
 
     <body>
 	<div class="container">	
 	    <h1>raspivideo</h1>
-        
+
 	    <button class="btn btn-warning btn-large" btn-type="button" id="list_movies">list movies</button>
-	    
+
+	    <input type="text" name="path" id="path_value" value="enter path">
+	    </input>
+	    <button class="btn btn-primary" id="path_btn">submit
+	    </button>
+	    <br>
+	    <br>
 	    <button class="btn btn-primary" id="play">play</button>
 	    <button class="btn btn-primary" id="pause">pause</button>
 	    <button class="btn btn-primary" id="stop">stop</button>
-	    
 	    <table class="table table-striped">
-            	<tbody></tbody>
+		<tbody></tbody>
 	    </table>
 	</div>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="//code.jquery.com/jquery.js"></script>
 	<!-- Include all compiled plugins (below), or include
-		individual files as needed -->
+	individual files as needed -->
 	<script src="/static/dist/js/bootstrap.min.js"></script>
     </body>
 </html>

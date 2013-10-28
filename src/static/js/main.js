@@ -3,6 +3,7 @@ $(function() {
     // baseUri needs to be the same as in app.py's app.run(URI)
     // to avoid ajax cross domain issues
     var baseUri = "/raspivideo/movies";
+    var pathUri = baseUri + "/path";
     var actionUri = baseUri + "/action";
     var playUri = actionUri + "/play";
     var pauseUri = actionUri + "/pause";
@@ -37,6 +38,19 @@ $(function() {
 	});
 	deferred.fail(function() {
 	    console.log("fail");
+	});
+    });
+
+    $("#path_btn").click(function() {
+	var path_value = $("#path_value").val();
+	var path_data_json = '{ "path": ' + '"' + path_value + '"' + ' }'	
+	$.ajax({
+	    type: "POST",
+	    url: pathUri,
+	    data: path_data_json,
+	    success: function(data) {},
+	    contentType: "application/json",
+	    dataType: "json"
 	});
     });
 
