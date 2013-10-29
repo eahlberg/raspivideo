@@ -6,9 +6,10 @@ $(function() {
     var pathUri = baseUri + "/path";
     var actionUri = baseUri + "/action";
     var playUri = actionUri + "/play";
-    var pauseUri = actionUri + "/pause";
+    var pauseUri = actionUri + "/play_pause";
     var stopUri = actionUri + "/stop"; 
     //alert(playUri);
+    var i = 0;
 
     $("#list_movies").click(function() {
 	$("table").append("<thead><tr><th>id</th><th>title</th></tr></thead>");
@@ -55,21 +56,23 @@ $(function() {
     });
 
     $("#pause").click(function() {
+	if (i == 0) {
+	    $("#pause").text("play").button("refresh");
+	} else {
+	    $("#pause").text("pause").button("refresh");
+	}
+	i = (i + 1) % 2;
 	var deferred = $.getJSON(pauseUri);
 	deferred.done(function(obj) {
-	    alert("pause call succeeded");
 	});
 	deferred.fail(function() {
-	    alert("pause call failed");
 	});
     });
     $("#stop").click(function() {
 	var def2 = $.getJSON(stopUri);
 	def2.done(function(obj) {
-	    alert("stop call succeeded");
 	});
 	def2.fail(function() {
-	    alert("stop call failed");
 	});
     });
 });

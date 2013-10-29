@@ -3,16 +3,12 @@ from flask import Flask, jsonify, make_response, abort, render_template, request
 import subprocess
 import json
 import sys
+import time
 
 app = Flask(__name__)
 
-#PATH = '/Volumes/Data/filmer'
-#PATH = '/home/pi/timecapsule/filmer'
-
-
-OMX_PATH = 'omxplayer -o local '
 movies = []
-
+now_playing = []
 
 # handlers
 @app.route('/raspivideo')
@@ -32,19 +28,22 @@ def get_movie(movie_id):
 
 @app.route('/raspivideo/movies/action/play/<int:movie_id>', methods = ['GET'])
 def play_movie(movie_id): 
-    proc = subprocess.Popen(['omxplayer', get_moviepath(movie_id)], stdin=subprocess.PIPE,)
+    now_playing.append(subprocess.Popen(['omxplayer',
+	get_moviepath(movie_id)],stdout=subprocess.PIPE,stdin=subprocess.PIPE))
     return jsonify( {'playing': movie_id} )
 
-@app.route('/raspivideo/movies/action/pause', methods = ['GET'])
+@app.route('/raspivideo/movies/action/play_pause', methods = ['GET'])
 def pause_movie():
-    # not yet implemented 
-    proc.communicate('p')
-    return jsonify( {'action': 'paused'} )
+    now_playing[0].stdin.write('p')
+    return jsonify( {'action': 'play/pause'} )
 
 @app.route('/raspivideo/movies/action/stop', methods = ['GET'])
 def stop_movie():
-    # not yet implemented
+    p = now_playing[0]
+    p.stdin.write('q')
+    now_playing.remove(p)
     return jsonify( {'action': 'stopped'} )
+
 
 
 @app.route('/raspivideo/movies/path', methods = ['POST'])
