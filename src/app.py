@@ -4,11 +4,13 @@ import subprocess
 import json
 import sys
 import time
+from omx import Omx
 
 app = Flask(__name__)
 
 movies = []
 now_playing = []
+omx = Omx()
 
 # handlers
 @app.route('/raspivideo')
@@ -27,24 +29,20 @@ def get_movie(movie_id):
     return jsonify( { 'movie': movie[0] } )
 
 @app.route('/raspivideo/movies/action/play/<int:movie_id>', methods = ['GET'])
-def play_movie(movie_id): 
-    now_playing.append(subprocess.Popen(['omxplayer',
-	get_moviepath(movie_id)],stdout=subprocess.PIPE,stdin=subprocess.PIPE))
+def play_movie(movie_id):
+    print "[APP] path: " + get_moviepath(movie_id)
+    omx.play(get_moviepath(movie_id))
     return jsonify( {'playing': movie_id} )
-
-@app.route('/raspivideo/movies/action/play_pause', methods = ['GET'])
-def pause_movie():
-    now_playing[0].stdin.write('p')
-    return jsonify( {'action': 'play/pause'} )
 
 @app.route('/raspivideo/movies/action/stop', methods = ['GET'])
 def stop_movie():
-    p = now_playing[0]
-    p.stdin.write('q')
-    now_playing.remove(p)
+    omx.stop()
     return jsonify( {'action': 'stopped'} )
 
-
+@app.route('/raspivideo/movies/action/play_pause', methods = ['GET'])
+def pause_movie():
+    omx.pause()
+    return jsonify( {'action': 'play/pause'} )
 
 @app.route('/raspivideo/movies/path', methods = ['POST'])
 def setup_path():
