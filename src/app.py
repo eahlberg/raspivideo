@@ -5,9 +5,9 @@ import json
 import sys
 import time
 from omx import Omx
+import ConfigParser
 
 app = Flask(__name__)
-
 movies = []
 now_playing = []
 omx = Omx()
@@ -15,6 +15,7 @@ omx = Omx()
 # handlers
 @app.route('/raspivideo')
 def index():
+    load_movies()
     return render_template('main.html')
 
 @app.route('/raspivideo/movies', methods = ['GET'])
@@ -30,7 +31,6 @@ def get_movie(movie_id):
 
 @app.route('/raspivideo/movies/action/play/<int:movie_id>', methods = ['GET'])
 def play_movie(movie_id):
-    print "[APP] path: " + get_moviepath(movie_id)
     omx.play(get_moviepath(movie_id))
     return jsonify( {'playing': movie_id} )
 
@@ -49,7 +49,8 @@ def setup_path():
     if not request.json or not 'path' in request.json:
 	abort(400)
     path = request.json['path']
-    load_movies(path)
+    init_config(path)
+    load_movies()
     return jsonify( {'path set': path} ), 201
 
 @app.errorhandler(404)
@@ -61,7 +62,11 @@ def get_moviepath(movie_id):
     movie = filter(lambda t : t['id'] == movie_id, movies)
     return movie[0]['title']
 
-def load_movies(path): 
+def load_movies(): 
+    print '[APP] loading movies'
+    config = ConfigParser.RawConfigParser()
+    config.read('settings.cfg')
+    path = config.get('info', 'path')
     file_ext1 = '*.avi'
     file_ext2 = '*.AVI'
     file_ext3 = '*.mkv'
@@ -77,7 +82,14 @@ def load_movies(path):
 		}
 	movies.append(movie)
 
+def init_config(path):
+    print '[APP] initializing path: ' + path
+    config = ConfigParser.RawConfigParser()
+    config.add_section('info')
+    config.set('info', 'path', path)
+    with open('settings.cfg', 'wb') as configfile:
+        config.write(configfile)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-
 
