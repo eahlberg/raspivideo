@@ -11,8 +11,8 @@ import subprocess
 import sys
 import omx
 import ConfigParser
+from app import app
 
-app = Flask(__name__)
 movies = []
 now_playing = []
 omxplayer = omx.Omx()
@@ -21,6 +21,7 @@ omxplayer = omx.Omx()
 # handlers
 @app.route('/raspivideo')
 def index():
+    load_movies()
     return render_template('main.html')
 
 
@@ -89,8 +90,9 @@ def get_data(movie_title, data):
 def load_movies():
     print '[APP] loading movies'
     config = ConfigParser.RawConfigParser()
-    config.read('settings.cfg')
+    config.read('app/settings.cfg')
     path = config.get('info', 'path')
+    print path
     file_ext1 = '*.avi'
     file_ext2 = '*.AVI'
     file_ext3 = '*.mkv'
@@ -116,15 +118,3 @@ def init_config(path):
     config.set('info', 'path', path)
     with open('settings.cfg', 'wb') as configfile:
         config.write(configfile)
-
-
-def main(argv):
-    load_movies()
-    print get_data(get_title(get_moviepath(1)), 'Poster')
-    print get_data(get_title(get_moviepath(1)), 'Plot')
-    print get_data(get_title(get_moviepath(1)), 'imdbRating')
-    print get_data(get_title(get_moviepath(1)), 'Runtime')
-    app.run(host='0.0.0.0')
-
-if __name__ == '__main__':
-    main(sys.argv)
