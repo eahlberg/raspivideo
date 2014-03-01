@@ -1,2 +1,0 @@
-- Vart ska saker initieras? i __init__? refaktorera koden i views.py till rÃtt
-  stÃlle
