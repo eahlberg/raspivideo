@@ -12,6 +12,7 @@ import sys
 import omx
 import ConfigParser
 from app import app
+import os
 
 movies = []
 now_playing = []
@@ -55,6 +56,14 @@ def pause_movie():
     omxplayer.pause()
     return jsonify({'action': 'play/pause'})
 
+@app.route('/raspivideo/movies/action/resume', methods=['GET'])
+def resume_movie():
+    config = ConfigParser.ConfigParser()
+    path = os.getcwd() + '/app/settings.cfg'
+    config.read(path)
+    running_time = config.getfloat('info', 'running time')
+    print running_time
+    return jsonify({'action': 'resumed'})
 
 @app.route('/raspivideo/movies/path', methods=['POST'])
 def setup_path():
@@ -80,11 +89,6 @@ def get_moviepath(movie_id):
 def get_title(movie_path):
     movie_title = movie_path.split('/')[-2:-1][0].split('.')[0]
     return movie_title
-
-
-def get_data(movie_title, data):
-    r = requests.get('http://www.omdbapi.com/?t=%s' % movie_title)
-    return r.json()[data]
 
 
 def load_movies():
