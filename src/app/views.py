@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-#from flask import (abort,
-#                   Flask,
-#                   jsonify,
-#                   make_response,
-#                   render_template,
-#                   request
-#                   )
 import flask
 import requests
 import subprocess
@@ -15,12 +8,11 @@ import ConfigParser
 from app import app
 import os
 
+
 movies = []
-now_playing = []
 omxplayer = omx.Omx()
 
 
-# handlers
 @app.route('/raspivideo')
 def index():
     load_movies()
@@ -42,8 +34,11 @@ def get_movie(movie_id):
 
 @app.route('/raspivideo/movies/action/play/<int:movie_id>', methods=['GET'])
 def play_movie(movie_id):
-    omxplayer.play(get_moviepath(movie_id))
-    return flask.jsonify({'playing': movie_id})
+    if len(omxplayer.currently_playing()) == 0:
+        omxplayer.play(get_moviepath(movie_id))
+        return flask.jsonify({'playing': movie_id})
+    else:
+        print '[APP] unable to start movie, already playing'
 
 
 @app.route('/raspivideo/movies/action/stop', methods=['GET'])
@@ -59,10 +54,15 @@ def pause_movie():
 
 @app.route('/raspivideo/movies/action/resume', methods=['GET'])
 def resume_movie():
-    config = ConfigParser.ConfigParser()
-    path = os.getcwd() + '/app/settings.cfg'
-    config.read(path)
-    running_time = config.getfloat('info', 'running time')
+    parser = ConfigParser.ConfigParser()
+    os_path = os.getcwd() + '/app/settings.cfg'
+    parser.read(os_path)
+    try:
+        running_time = parser.getfloat('info', 'running time')
+    except ConfigParser.ConfigError, e:
+        print '[ERROR] unable to load running time from config'
+        print e
+
     print running_time
     return flask.jsonify({'action': 'resumed'})
 
@@ -94,10 +94,15 @@ def get_title(movie_path):
 
 def load_movies():
     print '[APP] loading movies'
-    config = ConfigParser.RawConfigParser()
-    config.read('app/settings.cfg')
-    path = config.get('info', 'path')
-    print path
+    parser = ConfigParser.ConfigParser()
+    os_path = os.getcwd() + '/app/settings.cfg'
+    parser.read(os_path)
+    try:
+        path = parser.get('info', 'path')
+    except ConfigParser.ConfigError, e:
+        print '[ERROR] unable to load path from config'
+        print e
+    
     file_ext1 = '*.avi'
     file_ext2 = '*.AVI'
     file_ext3 = '*.mkv'

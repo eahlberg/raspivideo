@@ -51,5 +51,5 @@ class Omx:
     def reverse(self):
         pass
 
-    def now_playing(self):
-        pass
+    def currently_playing(self):
+        return self.now_playing
