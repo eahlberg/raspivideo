@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-from flask import (abort,
-                   Flask,
-                   jsonify,
-                   make_response,
-                   render_template,
-                   request
-                   )
+#from flask import (abort,
+#                   Flask,
+#                   jsonify,
+#                   make_response,
+#                   render_template,
+#                   request
+#                   )
+import flask
 import requests
 import subprocess
 import sys
@@ -23,12 +24,12 @@ omxplayer = omx.Omx()
 @app.route('/raspivideo')
 def index():
     load_movies()
-    return render_template('main.html')
+    return flask.render_template('main.html')
 
 
 @app.route('/raspivideo/movies', methods=['GET'])
 def get_all_movies():
-    return jsonify({'movies': movies})
+    return flask.jsonify({'movies': movies})
 
 
 @app.route('/raspivideo/movies/<int:movie_id>', methods=['GET'])
@@ -36,25 +37,25 @@ def get_movie(movie_id):
     movie = filter(lambda t: t['id'] == movie_id, movies)
     if len(movie) == 0:
         abort(404)
-    return jsonify({'movie': movie[0]})
+    return flask.jsonify({'movie': movie[0]})
 
 
 @app.route('/raspivideo/movies/action/play/<int:movie_id>', methods=['GET'])
 def play_movie(movie_id):
     omxplayer.play(get_moviepath(movie_id))
-    return jsonify({'playing': movie_id})
+    return flask.jsonify({'playing': movie_id})
 
 
 @app.route('/raspivideo/movies/action/stop', methods=['GET'])
 def stop_movie():
     omxplayer.stop()
-    return jsonify({'action': 'stopped'})
+    return flask.jsonify({'action': 'stopped'})
 
 
 @app.route('/raspivideo/movies/action/play_pause', methods=['GET'])
 def pause_movie():
     omxplayer.pause()
-    return jsonify({'action': 'play/pause'})
+    return flask.jsonify({'action': 'play/pause'})
 
 @app.route('/raspivideo/movies/action/resume', methods=['GET'])
 def resume_movie():
@@ -63,7 +64,7 @@ def resume_movie():
     config.read(path)
     running_time = config.getfloat('info', 'running time')
     print running_time
-    return jsonify({'action': 'resumed'})
+    return flask.jsonify({'action': 'resumed'})
 
 @app.route('/raspivideo/movies/path', methods=['POST'])
 def setup_path():
@@ -72,12 +73,12 @@ def setup_path():
     path = request.json['path']
     init_config(path)
     load_movies()
-    return jsonify({'path set': path}), 201
+    return flask.jsonify({'path set': path}), 201
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return flask.make_response(jsonify({'error': 'Not found'}), 404)
 
 
 # helper functions
