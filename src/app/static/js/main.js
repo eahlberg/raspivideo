@@ -48,13 +48,15 @@ $(function() {
 	});
     });
 
+
     $("#pause").click(function() {
-	if (i == 0) {
-	    $("#pause").text("play").button("refresh");
-	} else {
-	    $("#pause").text("pause").button("refresh");
-	}
-	i = (i + 1) % 2;
+    if ($(this).text() === "play") {
+        $(this).text('pause');
+    } else {
+        $(this).text('play');
+    }
+    
+
 	var deferred = $.getJSON(pauseUri);
 	deferred.done(function(obj) {
 	});

@@ -7,6 +7,7 @@ import os
 STOP = 'q'
 PAUSE = 'p'
 FWD = 'right'
+REV = 'left'
 
 class Omx:
     def __init__(self):
@@ -33,11 +34,11 @@ class Omx:
         p.stdin.write(STOP)
         self.now_playing.remove(p)
         
-        config = ConfigParser.ConfigParser()
-        config.read('settings.cfg')
+        parser = ConfigParser.ConfigParser()
+        parser.read('settings.cfg')
         path = os.getcwd() + '/app/settings.cfg'
-        config.read(path)
-        config.set('info', 'running time', str(running_time))
+        parser.read(path)
+        parser.set('info', 'running time', str(running_time))
 
         with open(path, 'wb') as config_file:
             config.write(config_file)
@@ -49,7 +50,7 @@ class Omx:
         self.now_playing[0].stdin.write(FWD)
 
     def reverse(self):
-        pass
+        self.now_playing[0].stdin.write(REV)
 
     def currently_playing(self):
         return self.now_playing
