@@ -2,6 +2,7 @@ import subprocess
 import time
 import ConfigParser
 import os
+import config
 
 
 STOP = 'q'
@@ -14,43 +15,58 @@ class Omx:
         self.now_playing = []
         self.start_time = None
         self.stop_time = None
+        self.config = config.Config()
 
-    def play(self, path):
-        print "[OMX] trying to play: " + path
-        self.now_playing.append(subprocess.Popen(['omxplayer', '-o', 'local',
-                                '-b', path], stdout=subprocess.PIPE,
-                                stdin=subprocess.PIPE))
-        self.start_time = time.time()
-        print "[OMX] started: " + path
-        print "[OMX] time: " + str(self.start_time)
+
+    def play(self, movie_id, path):
+        if len(self.now_playing) == 0:
+            movie_id = str(movie_id)
+            self.start_time = time.time()
+            if self.config.get('last played') != movie_id:
+                self.now_playing.append(subprocess.Popen(['omxplayer', '-o', 'local',
+                    '-b', path], stdout=subprocess.PIPE,
+                    stdin=subprocess.PIPE))
+                print "[OMX] playing. id: %s, path: %s" % (movie_id, path)
+                self.config.add('last played', movie_id)
+            else:
+                running_time = float(self.config.get('running time'))
+                self.now_playing.append(subprocess.Popen(['omxplayer', '-o',
+                    'local', '-b', path, '-l', str(running_time)], stdout=subprocess.PIPE, stdin=subprocess.PIPE))
+                print "[OMX] resuming at: %d. id: %s, path: %s" % (running_time, movie_id, path)
+        else:
+            print '[OMX] already playing'
+
 
     def stop(self):
-        self.stop_time = time.time()
-        print "[OMX] stopping"
-        print "[OMX] stop time: " + str(self.stop_time)
-        running_time = self.stop_time - self.start_time
-        print "[OMX] running time: " + str(running_time)
-        p = self.now_playing[0]
-        p.stdin.write(STOP)
-        self.now_playing.remove(p)
-        
-        parser = ConfigParser.ConfigParser()
-        parser.read('settings.cfg')
-        path = os.getcwd() + '/app/settings.cfg'
-        parser.read(path)
-        parser.set('info', 'running time', str(running_time))
+        if len(self.now_playing) != 0:
+            p = self.now_playing.pop()
+            running_time = time.time() - self.start_time
+            print '[OMX] stopped, running time: %ds' % running_time
+            p.stdin.write(STOP)
+            self.config.add('running time', str(running_time))
 
-        with open(path, 'wb') as config_file:
-            config.write(config_file)
 
     def pause(self):
-        self.now_playing[0].stdin.write(PAUSE)
+        if self.now_playing[0]:
+            self.now_playing[0].stdin.write(PAUSE)
+
 
     def forward(self):
-        self.now_playing[0].stdin.write(FWD)
+        if self.now_playing[0]:
+            self.now_playing[0].stdin.write(FWD)
+
 
     def reverse(self):
-        self.now_playing[0].stdin.write(REV)
+        if self.now_playing[0]:
+            self.now_playing[0].stdin.write(REV)
+
+
+    def resume(self):
+        pass
+        # if self.now_playing[0]:
+            # self.now_playing[0].stdin.write(RESUME + ' ' +
+            #         str(self.start_time))
+
 
     def currently_playing(self):
         return self.now_playing
