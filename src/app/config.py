@@ -4,6 +4,9 @@ import ConfigParser
 
 
 class Config:
+    """
+    Class for persisting settings such as path, last played movie, running time.
+    """
     def __init__(self):
         self.path = os.getcwd() + '/app'
         self.cfg_path = self.path + '/settings.cfg'
@@ -21,13 +24,18 @@ class Config:
             with open(self.cfg_path, 'wb') as file:
                 parser.write(file)
 
-
     def get(self, item):
+        """
+        Returns the value of a certain item in the config.
+        """
         parser = ConfigParser.SafeConfigParser()
         parser.read(self.cfg_path)
         return parser.get('info', item)
 
     def add(self, item, value):
+        """
+        Adds a value to the config.
+        """
         parser = ConfigParser.SafeConfigParser()
         parser.read(self.cfg_path)
         try:
@@ -36,6 +44,3 @@ class Config:
             print e
         with open(self.cfg_path, 'wb') as file:
             parser.write(file)
-
-
-
