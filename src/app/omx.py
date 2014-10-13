@@ -53,7 +53,7 @@ class Omx:
         """
         Stops the running video.
         """
-        if len(self.now_playing) != 0:
+        if self.now_playing:
             p = self.now_playing.pop()
             running_time = time.time() - self.start_time
             print '[OMX] stopped, running time: %ds' % running_time
@@ -64,21 +64,21 @@ class Omx:
         """
         Pauses the running video.
         """
-        if self.now_playing[0]:
+        if self.now_playing:
             self.now_playing[0].stdin.write(PAUSE)
 
     def forward(self):
         """
         Forwards 30 seconds in the currently playing video.
         """
-        if self.now_playing[0]:
+        if self.now_playing:
             self.now_playing[0].stdin.write(FWD)
 
     def reverse(self):
         """
         Reverses 30 seconds in the currently playing video.
         """
-        if self.now_playing[0]:
+        if self.now_playing:
             self.now_playing[0].stdin.write(REV)
 
     def currently_playing(self):
