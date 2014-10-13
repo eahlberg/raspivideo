@@ -32,8 +32,8 @@ def index():
     """
     Handler for the root url. Loads all movies and renders the first page.
     """
-    load_movies()
-    print '[APP] movies loaded'
+    if path_set():
+        load_movies()
     return flask.render_template('main.html')
 
 
@@ -42,6 +42,8 @@ def get_all_movies():
     """
     Returns a json file of all movies.
     """
+    if path_set():
+        load_movies()
     return flask.jsonify({'movies': [e.__dict__ for e in movies]})
 
 
@@ -91,7 +93,6 @@ def resume_movie():
     """
     Resumes the movie with the specified movie id.
     """
-    print config.get('running time')
     return flask.jsonify({'action': 'resumed'})
 
 
@@ -100,10 +101,11 @@ def setup_path():
     """
     Handles a POST request containing the path of the video files.
     """
-    if 'path' not in request.json:
+    if 'path' not in flask.request.json:
         abort(400)
-    movie_path = request.json['path']
+    movie_path = flask.request.json['path']
     config.add('movie path', movie_path)
+    print '[APP] path set'
     return flask.jsonify({'path set': movie_path}), 201
 
 
@@ -112,7 +114,7 @@ def not_found(error):
     """
     Standard error handler.
     """
-    return flask.make_response(jsonify({'error': 'Not found'}), 404)
+    return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
 
 
 # helper functions
@@ -151,3 +153,13 @@ def load_movies():
         title = get_title(path)
         m = movie.Movie(i, title, path)
         movies.append(m)
+    print '[APP] movies loaded'
+
+def path_set():
+    """
+    Checks if the path is set in the config.
+    """
+    path = config.get('movie path')
+    if path:
+        return True
+    return False
